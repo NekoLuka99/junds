@@ -52,7 +52,6 @@ function buildNav() {
       localStorage.removeItem("user");
       window.location.reload(); // Seite neu laden
     });
-  }
 }
 
 
