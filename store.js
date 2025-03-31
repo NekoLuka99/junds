@@ -1,10 +1,19 @@
 // store.js
 import { db, storage } from './firebase.js';
 import {
-  collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import {
-  ref, uploadBytes, getDownloadURL
+  ref,
+  uploadBytes,
+  getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
 const productList = document.getElementById("productList");
@@ -36,37 +45,6 @@ function addToCart(product, menge) {
   }
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartDisplay();
-}
-
-async function resizeImage(file, maxWidth = 600, maxHeight = 400) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = e => img.src = e.target.result;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      let width = img.width;
-      let height = img.height;
-
-      if (width > height && width > maxWidth) {
-        height *= maxWidth / width;
-        width = maxWidth;
-      } else if (height > maxHeight) {
-        width *= maxHeight / height;
-        height = maxHeight;
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, width, height);
-
-      canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.8);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }
 
 async function loadProducts() {
@@ -138,44 +116,6 @@ async function loadProducts() {
   });
 }
 
-adminForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const product = document.getElementById("newName").value.trim();
-  const price = parseFloat(document.getElementById("newPrice").value);
-  const unit = document.getElementById("newUnit").value.trim();
-  const desc = document.getElementById("newDesc").value.trim();
-  const file = document.getElementById("newImage").files[0];
-
-  statusEl.textContent = "Wird gespeichert...";
-  let imageUrl = "";
-
-  try {
-    if (file) {
-      const resizedBlob = await resizeImage(file);
-      const storageRef = ref(storage, `product_images/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, resizedBlob);
-      imageUrl = await getDownloadURL(storageRef);
-    }
-
-    await addDoc(collection(db, "products"), {
-      product,
-      price,
-      unit,
-      desc,
-      imageUrl
-    });
-
-    statusEl.textContent = "✅ Produkt hinzugefügt!";
-    adminForm.reset();
-    modal.style.display = "none";
-    loadProducts();
-  } catch (err) {
-    console.error("Fehler beim Speichern:", err);
-    statusEl.textContent = "❌ Fehler beim Speichern.";
-  }
-});
-
 async function checkIfAdmin() {
   const username = localStorage.getItem("user")?.toLowerCase();
   if (!username) return;
@@ -186,6 +126,63 @@ async function checkIfAdmin() {
     openModalBtn.style.display = "inline-block";
   }
 }
+
+adminForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const product = document.getElementById("newName").value.trim();
+  const price = parseFloat(document.getElementById("newPrice").value);
+  const unit = document.getElementById("newUnit").value.trim();
+  const desc = document.getElementById("newDesc").value.trim();
+  const file = document.getElementById("newImage").files[0];
+
+  statusEl.textContent = "Wird gespeichert...";
+
+  if (file) {
+    window.validateImageSize(file, async (isValid) => {
+      if (!isValid) {
+        statusEl.textContent = "❌ Das Bild muss genau 160x160 Pixel groß sein.";
+        return;
+      }
+
+      try {
+        const storageRef = ref(storage, `product_images/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const imageUrl = await getDownloadURL(storageRef);
+
+        await addDoc(collection(db, "products"), {
+          product,
+          price,
+          unit,
+          desc,
+          imageUrl
+        });
+
+        statusEl.textContent = "✅ Produkt hinzugefügt!";
+        adminForm.reset();
+        modal.style.display = "none";
+        loadProducts();
+      } catch (err) {
+        console.error("Fehler beim Speichern:", err);
+        statusEl.textContent = "❌ Fehler beim Speichern.";
+      }
+    });
+  } else {
+    // kein Bild, trotzdem speichern
+    await addDoc(collection(db, "products"), {
+      product,
+      price,
+      unit,
+      desc,
+      imageUrl: ""
+    });
+
+    statusEl.textContent = "✅ Produkt ohne Bild gespeichert!";
+    adminForm.reset();
+    modal.style.display = "none";
+    loadProducts();
+  }
+});
 
 await checkIfAdmin();
 await loadProducts();
