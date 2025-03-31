@@ -1,5 +1,11 @@
 // main.js
 import { db } from './firebase.js';
+import {
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 // Header laden
 const headerContainer = document.getElementById("header-container");
@@ -23,7 +29,6 @@ async function buildNav() {
   if (username) {
     let isAdmin = false;
 
-    // Firestore prüfen, ob User Admin ist
     try {
       const usersRef = collection(db, "users");
       const userQuery = query(usersRef, where("username", "==", username));
@@ -59,6 +64,5 @@ async function buildNav() {
   }
 }
 
-
-// Optional: Konsolentest, ob Firestore verbunden ist
+// Optional: Firestore-Test
 console.log("Firestore verbunden:", db);
