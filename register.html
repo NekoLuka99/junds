@@ -35,34 +35,33 @@
     const status = document.getElementById("status");
 
     form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+      e.preventDefault();
 
-  const username = document.getElementById("username").value.trim().toLowerCase();
-  const password = document.getElementById("password").value;
+      const username = document.getElementById("username").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
 
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("username", "==", username));
-  const snapshot = await getDocs(q);
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+        const snapshot = await getDocs(q);
 
-  if (!snapshot.empty) {
-    status.textContent = "Benutzername bereits vergeben.";
-    return;
-  }
+        if (!snapshot.empty) {
+          status.textContent = "Benutzername bereits vergeben.";
+          return;
+        }
 
-  try {
-    await addDoc(usersRef, {
-      username,
-      password
+        await addDoc(usersRef, {
+          username,
+          password
+        });
+
+        status.textContent = "Registrierung erfolgreich. Du kannst dich jetzt einloggen.";
+        form.reset();
+      } catch (error) {
+        console.error("Fehler bei Registrierung:", error);
+        status.textContent = "Fehler beim Registrieren.";
+      }
     });
-
-    status.textContent = "Registrierung erfolgreich. Du kannst dich jetzt einloggen.";
-    form.reset();
-  } catch (error) {
-    console.error("Fehler bei Registrierung:", error);
-    status.textContent = "Fehler beim Registrieren.";
-  }
-});
-
   </script>
 
   <script type="module" src="main.js"></script>
