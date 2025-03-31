@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Benutzername" required><br>
+    <input type="password" id="password" placeholder="Passwort" required><br>
+    <button type="submit">Einloggen</button>
+  </form>
+
+  <p id="error" style="color: red;"></p>
+
+  <script type="module">
+    // Firebase-Konfiguration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "DEIN_API_KEY",
+      authDomain: "DEIN_AUTH_DOMAIN",
+      projectId: "DEIN_PROJECT_ID",
+      storageBucket: "DEIN_STORAGE_BUCKET",
+      messagingSenderId: "DEIN_MESSAGING_ID",
+      appId: "DEINE_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const loginForm = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("error");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("username", "==", username), where("password", "==", password));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        localStorage.setItem("user", username); // oder userID
+        window.location.href = "bestellen.html";
+      } else {
+        errorMsg.textContent = "Falscher Benutzername oder Passwort.";
+      }
+    });
+  </script>
+</body>
+</html>
