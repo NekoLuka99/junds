@@ -88,26 +88,35 @@
       </div>
     </div>
 
-    <a href="checkout.html"
-      id="goToCartBtn"
-      style="position: fixed;
-      top: 4.5rem;
-      right: 8rem;
-      background: #007bff;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      z-index: 101;">
-  ➡️ Zum Warenkorb
-</a>
+    <a href="checkout.html" id="goToCartBtn" style="position: fixed; top: 4.5rem; right: 8rem; background: #007bff; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: bold; z-index: 101;">
+      ➡️ Zur Kasse
+    </a>
 
-    
     <div class="product-list" id="productList">Produkte werden geladen...</div>
   </main>
 
   <script type="module" src="store.js"></script>
   <script type="module" src="main.js"></script>
+  <script>
+    // Bildgrößenprüfung zur globalen Verfügung (optional in store.js verschiebbar)
+    window.validateImageSize = (file, callback) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = e => {
+        img.src = e.target.result;
+      };
+
+      img.onload = () => {
+        if (img.width !== 160 || img.height !== 160) {
+          callback(false);
+        } else {
+          callback(true);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    };
+  </script>
 </body>
 </html>
