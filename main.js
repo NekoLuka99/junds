@@ -10,11 +10,11 @@ const navButtons = document.querySelector(".nav-buttons");
 if (navButtons) {
   if (username) {
     navButtons.innerHTML = `
-      <span style="color: white; margin-right: 1rem;">Angemeldet als <strong>${username}</strong></span>
-      <a href="#" id="logoutBtn">Logout</a>
-      <a href="order.html">Meine Bestellungen</a>
+  <span style="color: white; margin-right: 1rem;">Angemeldet als <strong>${username}</strong></span>
+  <a href="meine-bestellungen.html">Meine Bestellungen</a>
+  <a href="#" id="logoutBtn">Logout</a>
+`;
 
-    `;
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("user");
