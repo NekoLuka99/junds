@@ -33,23 +33,24 @@
     const loginForm = document.getElementById("loginForm");
     const errorMsg = document.getElementById("error");
 
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    lloginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value.trim().toLowerCase();
+  const password = document.getElementById("password").value;
 
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("username", "==", username), where("password", "==", password));
-      const querySnapshot = await getDocs(q);
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("username", "==", username), where("password", "==", password));
+  const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        localStorage.setItem("user", username);
-        window.location.href = "order.html";
-      } else {
-        errorMsg.textContent = "Falscher Benutzername oder Passwort.";
-      }
-    });
+  if (!querySnapshot.empty) {
+    localStorage.setItem("user", username);
+    window.location.href = "order.html";
+  } else {
+    errorMsg.textContent = "Falscher Benutzername oder Passwort.";
+  }
+});
+
   </script>
 
   <script type="module" src="main.js"></script>
