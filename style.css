@@ -48,3 +48,18 @@ form button {
   width: 100%;
   max-width: 300px;
 }
+
+.btn-store {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.7rem 1.2rem;
+  background-color: #5cb85c;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.btn-store:hover {
+  background-color: #4cae4c;
+}
