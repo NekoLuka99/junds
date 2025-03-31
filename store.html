@@ -6,16 +6,16 @@
   <link rel="stylesheet" href="style.css">
   <style>
     #cart {
-    position: fixed;
-    top: 4.5rem; /* oder 5rem, je nach Headerhöhe */
-    right: 1rem;
-    background: #444;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: bold;
-    z-index: 100;
-  }
+      position: fixed;
+      top: 4.5rem;
+      right: 1rem;
+      background: #444;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 100;
+    }
 
     .product-list {
       display: grid;
@@ -28,19 +28,29 @@
       border-radius: 8px;
       padding: 1rem;
       background: #f9f9f9;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
     }
-    .product-card h3 {
-      margin: 0 0 0.5rem 0;
+
+    .product-card img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin: 0.5rem 0;
     }
-    .product-card p {
-      margin: 0.2rem 0;
-    }
+
     .product-card input[type="number"] {
       width: 60px;
       margin-right: 0.5rem;
+    }
+
+    #adminPanel {
+      margin: 2rem;
+      padding: 1rem;
+      border: 2px dashed #aaa;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+
+    #adminPanel h3 {
+      margin-top: 0;
     }
   </style>
 </head>
@@ -52,15 +62,42 @@
 
   <main>
     <h2>Produkte</h2>
+    <div id="adminPanel" style="display: none;">
+      <h3>Neues Produkt hinzufügen (nur Admins)</h3>
+      <form id="adminForm">
+        <input type="text" id="newName" placeholder="Produktname" required><br>
+        <input type="number" id="newPrice" placeholder="Preis (€)" required><br>
+        <input type="text" id="newUnit" placeholder="Einheit (z. B. 100 Stück)" required><br>
+        <input type="text" id="newDesc" placeholder="Beschreibung (optional)"><br>
+        <input type="file" id="newImage" accept="image/*"><br><br>
+        <button type="submit">Produkt speichern</button>
+        <p id="adminStatus"></p>
+      </form>
+    </div>
+
     <div class="product-list" id="productList">Produkte werden geladen...</div>
   </main>
 
   <script type="module">
-    import { db } from './firebase.js';
-    import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { db, storage } from './firebase.js';
+    import {
+      collection,
+      getDocs,
+      addDoc,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import {
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
     const productList = document.getElementById("productList");
     const cartEl = document.getElementById("cart");
+    const adminPanel = document.getElementById("adminPanel");
+    const adminForm = document.getElementById("adminForm");
+    const statusEl = document.getElementById("adminStatus");
 
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
@@ -99,18 +136,17 @@
         const card = document.createElement("div");
         card.className = "product-card";
 
-        // Optional vorbereitete Felder
         const name = data.product || "Unbenannt";
         const price = data.price || 0;
         const unit = data.unit || "";
         const desc = data.desc || "";
-        const imageUrl = data.imageUrl || ""; // für später
+        const imageUrl = data.imageUrl || "";
 
         card.innerHTML = `
           <h3>${name}</h3>
           <p><strong>${price.toFixed(2)} €</strong> pro ${unit}</p>
           ${desc ? `<p>${desc}</p>` : ""}
-          ${imageUrl ? `<img src="${imageUrl}" alt="${name}" style="max-width: 100%; border-radius: 6px;">` : ""}
+          ${imageUrl ? `<img src="${imageUrl}" alt="${name}">` : ""}
           <div style="margin-top: 0.5rem;">
             <input type="number" min="1" value="1" id="qty-${doc.id}">
             <button id="btn-${doc.id}">Hinzufügen</button>
@@ -126,8 +162,59 @@
       });
     }
 
+    // Admin-Funktion sichtbar machen, wenn isAdmin true
+    async function checkIfAdmin() {
+      const username = localStorage.getItem("user")?.toLowerCase();
+      if (!username) return;
+
+      const userQuery = query(collection(db, "users"), where("username", "==", username));
+      const userSnap = await getDocs(userQuery);
+      if (!userSnap.empty && userSnap.docs[0].data().isAdmin) {
+        adminPanel.style.display = "block";
+      }
+    }
+
+    adminForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const product = document.getElementById("newName").value.trim();
+      const price = parseFloat(document.getElementById("newPrice").value);
+      const unit = document.getElementById("newUnit").value.trim();
+      const desc = document.getElementById("newDesc").value.trim();
+      const file = document.getElementById("newImage").files[0];
+
+      statusEl.textContent = "Wird gespeichert...";
+
+      let imageUrl = "";
+
+      try {
+        if (file) {
+          const storageRef = ref(storage, `product_images/${Date.now()}_${file.name}`);
+          await uploadBytes(storageRef, file);
+          imageUrl = await getDownloadURL(storageRef);
+        }
+
+        await addDoc(collection(db, "products"), {
+          product,
+          price,
+          unit,
+          desc,
+          imageUrl
+        });
+
+        statusEl.textContent = "✅ Produkt hinzugefügt!";
+        adminForm.reset();
+        loadProducts();
+      } catch (err) {
+        console.error("Fehler beim Speichern:", err);
+        statusEl.textContent = "❌ Fehler beim Speichern.";
+      }
+    });
+
+    // Initial
     loadProducts();
     updateCartDisplay();
+    checkIfAdmin();
   </script>
 
   <script type="module" src="main.js"></script>
