@@ -130,9 +130,14 @@
   const adminForm = document.getElementById("adminForm");
   const statusEl = document.getElementById("adminStatus");
   const modal = document.getElementById("productModal");
+  const productList = document.getElementById("productList");
+
+  let isSaving = false;
 
   adminForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (isSaving) return;
+    isSaving = true;
 
     const product = document.getElementById("newName").value.trim();
     const price = parseFloat(document.getElementById("newPrice").value);
@@ -163,10 +168,14 @@
       statusEl.textContent = "✅ Produkt hinzugefügt!";
       adminForm.reset();
       modal.style.display = "none";
+
+      await loadProducts();
     } catch (err) {
       console.error("Fehler beim Speichern:", err);
       statusEl.textContent = "❌ Fehler beim Speichern.";
     }
+
+    isSaving = false;
   });
 </script>
 </head>
