@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Store – J&S Transporte</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #cart {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #444;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 100;
+    }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 2rem;
+    }
+    .product-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-card h3 {
+      margin: 0 0 0.5rem 0;
+    }
+    .product-card p {
+      margin: 0.2rem 0;
+    }
+    .product-card input[type="number"] {
+      width: 60px;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header-container"></div>
+
+  <div id="cart">🛒 0 Artikel</div>
+
+  <main>
+    <h2>Produkte</h2>
+    <div class="product-list" id="productList">Produkte werden geladen...</div>
+  </main>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const productList = document.getElementById("productList");
+    const cartEl = document.getElementById("cart");
+
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    function updateCartDisplay() {
+      const total = cart.reduce((sum, item) => sum + item.menge, 0);
+      cartEl.textContent = `🛒 ${total} Artikel`;
+    }
+
+    function addToCart(product, menge) {
+      if (menge < 1) return;
+
+      const existing = cart.find(item => item.product === product.product);
+      if (existing) {
+        existing.menge += menge;
+      } else {
+        cart.push({ ...product, menge });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartDisplay();
+    }
+
+    async function loadProducts() {
+      const snapshot = await getDocs(collection(db, "products"));
+
+      if (snapshot.empty) {
+        productList.innerHTML = "<p>Keine Produkte gefunden.</p>";
+        return;
+      }
+
+      productList.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        // Optional vorbereitete Felder
+        const name = data.product || "Unbenannt";
+        const price = data.price || 0;
+        const unit = data.unit || "";
+        const desc = data.desc || "";
+        const imageUrl = data.imageUrl || ""; // für später
+
+        card.innerHTML = `
+          <h3>${name}</h3>
+          <p><strong>${price.toFixed(2)} €</strong> pro ${unit}</p>
+          ${desc ? `<p>${desc}</p>` : ""}
+          ${imageUrl ? `<img src="${imageUrl}" alt="${name}" style="max-width: 100%; border-radius: 6px;">` : ""}
+          <div style="margin-top: 0.5rem;">
+            <input type="number" min="1" value="1" id="qty-${doc.id}">
+            <button id="btn-${doc.id}">Hinzufügen</button>
+          </div>
+        `;
+
+        productList.appendChild(card);
+
+        document.getElementById(`btn-${doc.id}`).addEventListener("click", () => {
+          const menge = parseInt(document.getElementById(`qty-${doc.id}`).value);
+          addToCart({ product: name, price, unit }, menge);
+        });
+      });
+    }
+
+    loadProducts();
+    updateCartDisplay();
+  </script>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
