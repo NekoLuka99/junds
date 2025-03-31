@@ -62,6 +62,7 @@
 
   <main>
     <h2>Produkte</h2>
+
     <div id="adminPanel" style="display: none;">
       <h3>Neues Produkt hinzufügen (nur Admins)</h3>
       <form id="adminForm">
@@ -84,6 +85,8 @@
       collection,
       getDocs,
       addDoc,
+      deleteDoc,
+      doc,
       query,
       where
     } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -100,6 +103,7 @@
     const statusEl = document.getElementById("adminStatus");
 
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    let isAdmin = false;
 
     function updateCartDisplay() {
       const total = cart.reduce((sum, item) => sum + item.menge, 0);
@@ -108,21 +112,18 @@
 
     function addToCart(product, menge) {
       if (menge < 1) return;
-
       const existing = cart.find(item => item.product === product.product);
       if (existing) {
         existing.menge += menge;
       } else {
         cart.push({ ...product, menge });
       }
-
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCartDisplay();
     }
 
     async function loadProducts() {
       const snapshot = await getDocs(collection(db, "products"));
-
       if (snapshot.empty) {
         productList.innerHTML = "<p>Keine Produkte gefunden.</p>";
         return;
@@ -130,8 +131,9 @@
 
       productList.innerHTML = "";
 
-      snapshot.forEach(doc => {
-        const data = doc.data();
+      snapshot.forEach(docItem => {
+        const data = docItem.data();
+        const docId = docItem.id;
 
         const card = document.createElement("div");
         card.className = "product-card";
@@ -148,21 +150,30 @@
           ${desc ? `<p>${desc}</p>` : ""}
           ${imageUrl ? `<img src="${imageUrl}" alt="${name}">` : ""}
           <div style="margin-top: 0.5rem;">
-            <input type="number" min="1" value="1" id="qty-${doc.id}">
-            <button id="btn-${doc.id}">Hinzufügen</button>
+            <input type="number" min="1" value="1" id="qty-${docId}">
+            <button id="btn-${docId}">Hinzufügen</button>
+            ${isAdmin ? `<button id="del-${docId}" style="background:red; color:white; margin-left:0.5rem;">Löschen</button>` : ""}
           </div>
         `;
 
         productList.appendChild(card);
 
-        document.getElementById(`btn-${doc.id}`).addEventListener("click", () => {
-          const menge = parseInt(document.getElementById(`qty-${doc.id}`).value);
+        document.getElementById(`btn-${docId}`).addEventListener("click", () => {
+          const menge = parseInt(document.getElementById(`qty-${docId}`).value);
           addToCart({ product: name, price, unit }, menge);
         });
+
+        if (isAdmin) {
+          document.getElementById(`del-${docId}`).addEventListener("click", async () => {
+            if (confirm(`Produkt „${name}“ wirklich löschen?`)) {
+              await deleteDoc(doc(db, "products", docId));
+              loadProducts();
+            }
+          });
+        }
       });
     }
 
-    // Admin-Funktion sichtbar machen, wenn isAdmin true
     async function checkIfAdmin() {
       const username = localStorage.getItem("user")?.toLowerCase();
       if (!username) return;
@@ -170,6 +181,7 @@
       const userQuery = query(collection(db, "users"), where("username", "==", username));
       const userSnap = await getDocs(userQuery);
       if (!userSnap.empty && userSnap.docs[0].data().isAdmin) {
+        isAdmin = true;
         adminPanel.style.display = "block";
       }
     }
@@ -211,10 +223,9 @@
       }
     });
 
-    // Initial
-    loadProducts();
+    await checkIfAdmin();
+    await loadProducts();
     updateCartDisplay();
-    checkIfAdmin();
   </script>
 
   <script type="module" src="main.js"></script>
