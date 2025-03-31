@@ -21,5 +21,11 @@ if (navButtons) {
   }
 }
 
+navButtons.innerHTML = `
+  <span style="color: white; margin-right: 1rem;">Angemeldet als <strong>${username}</strong></span>
+  <a href="#" id="logoutBtn">Logout</a>
+`;
+
+
 // Optional: Konsolentest, ob Firestore verbunden ist
 console.log("Firestore verbunden:", db);
