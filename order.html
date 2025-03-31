@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Bestellung</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Bestellung aufgeben</h2>
+
+  <form id="orderForm">
+    <input type="text" id="produkt" placeholder="Produktname" required><br>
+    <input type="number" id="menge" placeholder="Menge" required><br>
+    <button type="submit">Bestellen</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const form = document.getElementById("orderForm");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const produkt = document.getElementById("produkt").value.trim();
+      const menge = parseInt(document.getElementById("menge").value);
+      const user = localStorage.getItem("user"); // aus login.html gespeichert
+
+      if (!user) {
+        status.textContent = "Du bist nicht eingeloggt.";
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "orders"), {
+          produkt,
+          menge,
+          user,
+          timestamp: serverTimestamp()
+        });
+
+        status.textContent = "Bestellung erfolgreich aufgegeben!";
+        form.reset();
+      } catch (error) {
+        console.error("Fehler beim Bestellen:", error);
+        status.textContent = "Fehler beim Absenden.";
+      }
+    });
+  </script>
+</body>
+</html>
