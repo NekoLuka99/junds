@@ -4,40 +4,139 @@
   <meta charset="UTF-8">
   <title>Admin – J&S Transporte</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .order-card {
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      color: white;
+      cursor: pointer;
+    }
+    .status-offen { background-color: #f0ad4e; }         /* Gelb */
+    .status-bearbeitung { background-color: #5bc0de; }   /* Blau */
+    .status-abgeschlossen { background-color: #5cb85c; } /* Grün */
+
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #ccc;
+      padding: 1rem;
+      z-index: 1000;
+      max-width: 400px;
+      display: none;
+    }
+    #popup h3 {
+      margin-top: 0;
+    }
+    #popup-close {
+      float: right;
+      cursor: pointer;
+      color: red;
+    }
+    #popup-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
   <div id="header-container"></div>
-
 
   <main>
     <h2>Bestellungen</h2>
     <div id="ordersContainer">Lade Bestellungen...</div>
   </main>
 
+  <div id="popup-overlay"></div>
+  <div id="popup">
+    <span id="popup-close">✖</span>
+    <div id="popup-content"></div>
+  </div>
+
   <script type="module">
     import { db } from './firebase.js';
     import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    const username = localStorage.getItem("user");
+    const username = localStorage.getItem("user")?.toLowerCase();
     const ordersContainer = document.getElementById("ordersContainer");
 
-    if (!username) {
-      ordersContainer.textContent = "Nicht eingeloggt.";
-      return;
+    const popup = document.getElementById("popup");
+    const popupContent = document.getElementById("popup-content");
+    const popupOverlay = document.getElementById("popup-overlay");
+    const popupClose = document.getElementById("popup-close");
+
+    popupClose.addEventListener("click", closePopup);
+    popupOverlay.addEventListener("click", closePopup);
+
+    function openPopup(html) {
+      popupContent.innerHTML = html;
+      popup.style.display = "block";
+      popupOverlay.style.display = "block";
     }
 
-    const usersRef = collection(db, "users");
-    const userQuery = query(usersRef, where("username", "==", username));
-    const userSnap = await getDocs(userQuery);
-
-    if (userSnap.empty || !userSnap.docs[0].data().isAdmin) {
-      ordersContainer.textContent = "Zugriff verweigert – nur für Admins.";
-      return;
+    function closePopup() {
+      popup.style.display = "none";
+      popupOverlay.style.display = "none";
     }
 
-    const ordersRef = collection(db, "orders");
-    const orderSnap = await getDocs(ordersRef);
+    async function loadOrders() {
+      if (!username) {
+        ordersContainer.textContent = "Nicht eingeloggt.";
+        return;
+      }
 
-    if (orderSnap.empty) {
-      ordersContainer.textContent
+      const usersRef = collection(db, "users");
+      const userQuery = query(usersRef, where("username", "==", username));
+      const userSnap = await getDocs(userQuery);
+
+      if (userSnap.empty || !userSnap.docs[0].data().isAdmin) {
+        ordersContainer.textContent = "Zugriff verweigert – nur für Admins.";
+        return;
+      }
+
+      const ordersRef = collection(db, "orders");
+      const orderSnap = await getDocs(ordersRef);
+
+      if (orderSnap.empty) {
+        ordersContainer.textContent = "Keine Bestellungen vorhanden.";
+        return;
+      }
+
+      ordersContainer.innerHTML = "";
+      orderSnap.forEach(doc => {
+        const order = doc.data();
+        const status = (order.status || "offen").toLowerCase();
+        const cssClass = status === "abgeschlossen" ? "status-abgeschlossen"
+                        : status === "in bearbeitung" ? "status-bearbeitung"
+                        : "status-offen";
+
+        const div = document.createElement("div");
+        div.className = `order-card ${cssClass}`;
+        div.textContent = `Bestellung von ${order.user}`;
+
+        div.addEventListener("click", () => {
+          openPopup(`
+            <h3>Bestellung von ${order.user}</h3>
+            <p><strong>Produkt:</strong> ${order.produkt}</p>
+            <p><strong>Menge:</strong> ${order.menge}</p>
+            <p><strong>Status:</strong> ${order.status || "offen"}</p>
+          `);
+        });
+
+        ordersContainer.appendChild(div);
+      });
+    }
+
+    loadOrders();
+  </script>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
