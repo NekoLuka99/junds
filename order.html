@@ -36,32 +36,33 @@
     const status = document.getElementById("status");
 
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  e.preventDefault();
 
-      const produkt = document.getElementById("produkt").value.trim();
-      const menge = parseInt(document.getElementById("menge").value);
-      const user = localStorage.getItem("user");
+  const produkt = document.getElementById("produkt").value.trim();
+  const menge = parseInt(document.getElementById("menge").value);
+  const user = localStorage.getItem("user").toLowerCase(); // 🔥 lowercase speichern
 
-      if (!user) {
-        status.textContent = "Du bist nicht eingeloggt.";
-        return;
-      }
+  if (!user) {
+    status.textContent = "Du bist nicht eingeloggt.";
+    return;
+  }
 
-      try {
-        await addDoc(collection(db, "orders"), {
-          produkt,
-          menge,
-          user,
-          timestamp: serverTimestamp()
-        });
-
-        status.textContent = "Bestellung erfolgreich!";
-        form.reset();
-      } catch (error) {
-        console.error("Fehler beim Bestellen:", error);
-        status.textContent = "Fehler beim Absenden.";
-      }
+  try {
+    await addDoc(collection(db, "orders"), {
+      produkt,
+      menge,
+      user,
+      timestamp: serverTimestamp()
     });
+
+    status.textContent = "Bestellung erfolgreich!";
+    form.reset();
+  } catch (error) {
+    console.error("Fehler beim Bestellen:", error);
+    status.textContent = "Fehler beim Absenden.";
+  }
+});
+
   </script>
 </body>
 </html>
