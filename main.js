@@ -1,9 +1,6 @@
 // main.js
 import { db } from './firebase.js';
 
-// Benutzername aus localStorage holen
-const username = localStorage.getItem("user");
-
 // Header laden
 const headerContainer = document.getElementById("header-container");
 if (headerContainer) {
@@ -16,7 +13,6 @@ if (headerContainer) {
 } else {
   buildNav(); // Falls kein Header vorhanden, trotzdem Navigation erzeugen
 }
-
 
 function buildNav() {
   const username = localStorage.getItem("user")?.toLowerCase();
@@ -45,16 +41,6 @@ function buildNav() {
     `;
   }
 }
-
-
-
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("user");
-      window.location.reload(); // Seite neu laden
-    });
-}
-
-
 
 // Optional: Konsolentest, ob Firestore verbunden ist
 console.log("Firestore verbunden:", db);
