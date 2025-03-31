@@ -2,19 +2,30 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Bestellung</title>
+  <title>Bestellung – J&S Transporte</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Bestellung aufgeben</h2>
 
-  <form id="orderForm">
-    <input type="text" id="produkt" placeholder="Produktname" required><br>
-    <input type="number" id="menge" placeholder="Menge" required><br>
-    <button type="submit">Bestellen</button>
-  </form>
+  <header>
+    <h1>J&S Transporte</h1>
+    <div class="nav-buttons">
+      <a href="login.html">Anmelden</a>
+      <a href="register.html">Registrieren</a>
+    </div>
+  </header>
 
-  <p id="status"></p>
+  <main>
+    <h2>Bestellung aufgeben</h2>
+
+    <form id="orderForm">
+      <input type="text" id="produkt" placeholder="Produktname" required>
+      <input type="number" id="menge" placeholder="Menge" required>
+      <button type="submit">Bestellen</button>
+    </form>
+
+    <p id="status"></p>
+  </main>
 
   <script type="module">
     import { db } from './firebase.js';
@@ -28,7 +39,7 @@
 
       const produkt = document.getElementById("produkt").value.trim();
       const menge = parseInt(document.getElementById("menge").value);
-      const user = localStorage.getItem("user"); // aus login.html gespeichert
+      const user = localStorage.getItem("user");
 
       if (!user) {
         status.textContent = "Du bist nicht eingeloggt.";
@@ -43,7 +54,7 @@
           timestamp: serverTimestamp()
         });
 
-        status.textContent = "Bestellung erfolgreich aufgegeben!";
+        status.textContent = "Bestellung erfolgreich!";
         form.reset();
       } catch (error) {
         console.error("Fehler beim Bestellen:", error);
