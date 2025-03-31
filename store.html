@@ -16,7 +16,6 @@
       font-weight: bold;
       z-index: 100;
     }
-
     .product-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -29,18 +28,15 @@
       padding: 1rem;
       background: #f9f9f9;
     }
-
     .product-card img {
       max-width: 100%;
       border-radius: 6px;
       margin: 0.5rem 0;
     }
-
     .product-card input[type="number"] {
       width: 60px;
       margin-right: 0.5rem;
     }
-
     #adminPanel {
       margin: 2rem;
       padding: 1rem;
@@ -48,21 +44,16 @@
       background: #f0f0f0;
       border-radius: 8px;
     }
-
     #adminPanel h3 {
       margin-top: 0;
     }
   </style>
 </head>
 <body>
-
   <div id="header-container"></div>
-
   <div id="cart">🛒 0 Artikel</div>
-
   <main>
     <h2>Produkte</h2>
-
     <div id="adminPanel" style="display: none;">
       <h3>Neues Produkt hinzufügen (nur Admins)</h3>
       <form id="adminForm">
@@ -75,10 +66,8 @@
         <p id="adminStatus"></p>
       </form>
     </div>
-
     <div class="product-list" id="productList">Produkte werden geladen...</div>
   </main>
-
   <script type="module">
     import { db, storage } from './firebase.js';
     import {
@@ -86,6 +75,7 @@
       getDocs,
       addDoc,
       deleteDoc,
+      updateDoc,
       doc,
       query,
       where
@@ -128,7 +118,6 @@
         productList.innerHTML = "<p>Keine Produkte gefunden.</p>";
         return;
       }
-
       productList.innerHTML = "";
 
       snapshot.forEach(docItem => {
@@ -145,14 +134,17 @@
         const imageUrl = data.imageUrl || "";
 
         card.innerHTML = `
-          <h3>${name}</h3>
-          <p><strong>${price.toFixed(2)} €</strong> pro ${unit}</p>
-          ${desc ? `<p>${desc}</p>` : ""}
+          <h3 contenteditable="${isAdmin}" id="name-${docId}">${name}</h3>
+          <p><strong><span contenteditable="${isAdmin}" id="price-${docId}">${price.toFixed(2)}</span> €</strong> pro <span contenteditable="${isAdmin}" id="unit-${docId}">${unit}</span></p>
+          ${desc ? `<p contenteditable="${isAdmin}" id="desc-${docId}">${desc}</p>` : ""}
           ${imageUrl ? `<img src="${imageUrl}" alt="${name}">` : ""}
           <div style="margin-top: 0.5rem;">
             <input type="number" min="1" value="1" id="qty-${docId}">
             <button id="btn-${docId}">Hinzufügen</button>
-            ${isAdmin ? `<button id="del-${docId}" style="background:red; color:white; margin-left:0.5rem;">Löschen</button>` : ""}
+            ${isAdmin ? `
+              <button id="save-${docId}" style="background:#5cb85c; color:white; margin-left:0.5rem;">Speichern</button>
+              <button id="del-${docId}" style="background:red; color:white; margin-left:0.5rem;">Löschen</button>
+            ` : ""}
           </div>
         `;
 
@@ -165,10 +157,25 @@
 
         if (isAdmin) {
           document.getElementById(`del-${docId}`).addEventListener("click", async () => {
-            if (confirm(`Produkt „${name}“ wirklich löschen?`)) {
+            if (confirm(`Produkt „${name}" wirklich löschen?`)) {
               await deleteDoc(doc(db, "products", docId));
               loadProducts();
             }
+          });
+
+          document.getElementById(`save-${docId}`).addEventListener("click", async () => {
+            const newName = document.getElementById(`name-${docId}`).textContent.trim();
+            const newPrice = parseFloat(document.getElementById(`price-${docId}`).textContent);
+            const newUnit = document.getElementById(`unit-${docId}`).textContent;
+            const newDesc = document.getElementById(`desc-${docId}`)?.textContent || "";
+            await updateDoc(doc(db, "products", docId), {
+              product: newName,
+              price: newPrice,
+              unit: newUnit,
+              desc: newDesc
+            });
+            alert("✅ Änderungen gespeichert");
+            loadProducts();
           });
         }
       });
@@ -177,7 +184,6 @@
     async function checkIfAdmin() {
       const username = localStorage.getItem("user")?.toLowerCase();
       if (!username) return;
-
       const userQuery = query(collection(db, "users"), where("username", "==", username));
       const userSnap = await getDocs(userQuery);
       if (!userSnap.empty && userSnap.docs[0].data().isAdmin) {
@@ -227,7 +233,6 @@
     await loadProducts();
     updateCartDisplay();
   </script>
-
   <script type="module" src="main.js"></script>
 </body>
 </html>
