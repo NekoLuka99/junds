@@ -2,37 +2,33 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <title>Login – J&S Transporte</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-  <script type="module" src="main.js"></script>
 <body>
-  <h2>Login</h2>
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="Benutzername" required><br>
-    <input type="password" id="password" placeholder="Passwort" required><br>
-    <button type="submit">Einloggen</button>
-  </form>
 
-  <p id="error" style="color: red;"></p>
+  <header>
+    <h1>J&S Transporte</h1>
+    <div class="nav-buttons">
+      <a href="login.html">Anmelden</a>
+      <a href="register.html">Registrieren</a>
+    </div>
+  </header>
+
+  <main>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Benutzername" required><br>
+      <input type="password" id="password" placeholder="Passwort" required><br>
+      <button type="submit">Einloggen</button>
+    </form>
+
+    <p id="error" style="color: red;"></p>
+  </main>
 
   <script type="module">
-    // Firebase-Konfiguration
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "DEIN_API_KEY",
-      authDomain: "DEIN_AUTH_DOMAIN",
-      projectId: "DEIN_PROJECT_ID",
-      storageBucket: "DEIN_STORAGE_BUCKET",
-      messagingSenderId: "DEIN_MESSAGING_ID",
-      appId: "DEINE_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    import { db } from './firebase.js';
+    import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const loginForm = document.getElementById("loginForm");
     const errorMsg = document.getElementById("error");
@@ -48,12 +44,14 @@
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        localStorage.setItem("user", username); // oder userID
-        window.location.href = "bestellen.html";
+        localStorage.setItem("user", username);
+        window.location.href = "order.html";
       } else {
         errorMsg.textContent = "Falscher Benutzername oder Passwort.";
       }
     });
   </script>
+
+  <script type="module" src="main.js"></script>
 </body>
 </html>
