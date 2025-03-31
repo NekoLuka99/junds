@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – J&S Transporte</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>J&S Transporte – Adminpanel</h1>
+    <div class="nav-buttons">
+      <a href="index.html">Startseite</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </div>
+  </header>
+
+  <main>
+    <h2>Bestellungen</h2>
+    <div id="ordersContainer">Lade Bestellungen...</div>
+  </main>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const username = localStorage.getItem("user");
+    const ordersContainer = document.getElementById("ordersContainer");
+
+    if (!username) {
+      ordersContainer.textContent = "Nicht eingeloggt.";
+      return;
+    }
+
+    const usersRef = collection(db, "users");
+    const userQuery = query(usersRef, where("username", "==", username));
+    const userSnap = await getDocs(userQuery);
+
+    if (userSnap.empty || !userSnap.docs[0].data().isAdmin) {
+      ordersContainer.textContent = "Zugriff verweigert – nur für Admins.";
+      return;
+    }
+
+    const ordersRef = collection(db, "orders");
+    const orderSnap = await getDocs(ordersRef);
+
+    if (orderSnap.empty) {
+      ordersContainer.textContent
