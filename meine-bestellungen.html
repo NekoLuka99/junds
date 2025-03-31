@@ -33,7 +33,6 @@
       return;
     }
 
-    // Benutzer auslesen
     const usersRef = collection(db, "users");
     const userQuery = query(usersRef, where("username", "==", username));
     const userSnap = await getDocs(userQuery);
@@ -44,15 +43,12 @@
     }
 
     const userData = userSnap.docs[0].data();
-    let ordersQuery;
+    const isAdmin = userData.isAdmin === true;
 
-    if (userData.isAdmin) {
-      // Admin sieht alle Bestellungen
-      ordersQuery = query(collection(db, "orders"));
-    } else {
-      // Normale User sehen nur ihre Bestellungen
-      ordersQuery = query(collection(db, "orders"), where("user", "==", username));
-    }
+    const ordersRef = collection(db, "orders");
+    const ordersQuery = isAdmin
+      ? query(ordersRef)
+      : query(ordersRef, where("user", "==", username));
 
     const orderSnap = await getDocs(ordersQuery);
 
