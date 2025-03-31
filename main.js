@@ -14,16 +14,33 @@ if (headerContainer) {
   buildNav(); // Falls kein Header vorhanden, trotzdem Navigation erzeugen
 }
 
-function buildNav() {
+async function buildNav() {
   const username = localStorage.getItem("user")?.toLowerCase();
   const navButtons = document.querySelector(".nav-buttons");
 
   if (!navButtons) return;
 
   if (username) {
+    let isAdmin = false;
+
+    // Firestore prüfen, ob User Admin ist
+    try {
+      const usersRef = collection(db, "users");
+      const userQuery = query(usersRef, where("username", "==", username));
+      const userSnap = await getDocs(userQuery);
+
+      if (!userSnap.empty) {
+        const userData = userSnap.docs[0].data();
+        isAdmin = userData.isAdmin === true;
+      }
+    } catch (err) {
+      console.error("Fehler beim Admin-Check:", err);
+    }
+
     navButtons.innerHTML = `
       <a href="index.html">Startseite</a>
       <a href="meine-bestellungen.html">Meine Bestellungen</a>
+      ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
       <span style="color: white;">Angemeldet als <strong>${username}</strong></span>
       <a href="#" id="logoutBtn">Logout</a>
     `;
@@ -41,6 +58,7 @@ function buildNav() {
     `;
   }
 }
+
 
 // Optional: Konsolentest, ob Firestore verbunden ist
 console.log("Firestore verbunden:", db);
