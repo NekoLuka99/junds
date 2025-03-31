@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrieren – J&S Transporte</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>J&S Transporte</h1>
+    <div class="nav-buttons">
+      <a href="login.html">Anmelden</a>
+      <a href="register.html">Registrieren</a>
+    </div>
+  </header>
+
+  <main>
+    <h2>Registrieren</h2>
+
+    <form id="registerForm">
+      <input type="text" id="username" placeholder="Benutzername" required>
+      <input type="password" id="password" placeholder="Passwort" required>
+      <button type="submit">Registrieren</button>
+    </form>
+
+    <p id="status"></p>
+  </main>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const form = document.getElementById("registerForm");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+
+      // prüfen, ob Benutzername bereits vergeben ist
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("username", "==", username));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        status.textContent = "Benutzername bereits vergeben.";
+        return;
+      }
+
+      try {
+        await addDoc(usersRef, {
+          username,
+          password // Hinweis: In echten Projekten immer hashen!
+        });
+
+        status.textContent = "Registrierung erfolgreich. Du kannst dich jetzt einloggen.";
+        form.reset();
+      } catch (error) {
+        console.error("Fehler bei Registrierung:", error);
+        status.textContent = "Fehler beim Registrieren.";
+      }
+    });
+  </script>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
