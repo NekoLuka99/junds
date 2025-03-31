@@ -12,14 +12,27 @@
       color: white;
       cursor: pointer;
     }
-    .status-offen { background-color: #f0ad4e; }         /* Gelb */
-    .status-bearbeitung { background-color: #5bc0de; }   /* Blau */
-    .status-abgeschlossen { background-color: #5cb85c; } /* Grün */
+    .status-offen { background-color: #f0ad4e; }
+    .status-bearbeitung { background-color: #5bc0de; }
+    .status-abgeschlossen { background-color: #5cb85c; }
+
+    .order-actions {
+      margin-top: 0.5rem;
+    }
+    .order-actions button {
+      margin-right: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-bearbeitung { background-color: #0275d8; color: white; }
+    .btn-abgeschlossen { background-color: #5cb85c; color: white; }
+    .btn-delete { background-color: #d9534f; color: white; }
 
     #popup {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       background: white;
       border: 2px solid #ccc;
@@ -38,7 +51,8 @@
     }
     #popup-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0,0,0,0.5);
       z-index: 999;
       display: none;
@@ -62,7 +76,15 @@
 
   <script type="module">
     import { db } from './firebase.js';
-    import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import {
+      collection,
+      getDocs,
+      query,
+      where,
+      updateDoc,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const username = localStorage.getItem("user")?.toLowerCase();
     const ordersContainer = document.getElementById("ordersContainer");
@@ -84,6 +106,20 @@
     function closePopup() {
       popup.style.display = "none";
       popupOverlay.style.display = "none";
+    }
+
+    async function updateStatus(orderId, newStatus) {
+      const ref = doc(db, "orders", orderId);
+      await updateDoc(ref, { status: newStatus });
+      loadOrders(); // neu laden
+    }
+
+    async function deleteOrder(orderId) {
+      const ref = doc(db, "orders", orderId);
+      if (confirm("Bestellung wirklich löschen?")) {
+        await deleteDoc(ref);
+        loadOrders(); // neu laden
+      }
     }
 
     async function loadOrders() {
@@ -110,8 +146,9 @@
       }
 
       ordersContainer.innerHTML = "";
-      orderSnap.forEach(doc => {
-        const order = doc.data();
+      orderSnap.forEach(docItem => {
+        const order = docItem.data();
+        const orderId = docItem.id;
         const status = (order.status || "offen").toLowerCase();
         const cssClass = status === "abgeschlossen" ? "status-abgeschlossen"
                         : status === "in bearbeitung" ? "status-bearbeitung"
@@ -119,9 +156,19 @@
 
         const div = document.createElement("div");
         div.className = `order-card ${cssClass}`;
-        div.textContent = `Bestellung von ${order.user}`;
+        div.innerHTML = `
+          <div><strong>Bestellung von ${order.user}</strong></div>
+          <div class="order-actions">
+            <button class="btn-bearbeitung">→ In Bearbeitung</button>
+            <button class="btn-abgeschlossen">→ Abgeschlossen</button>
+            <button class="btn-delete">Löschen</button>
+          </div>
+        `;
 
-        div.addEventListener("click", () => {
+        // Klick auf Kasten zeigt Popup mit Details
+        div.addEventListener("click", (e) => {
+          // Klick auf Button → Popup unterdrücken
+          if (e.target.tagName === "BUTTON") return;
           openPopup(`
             <h3>Bestellung von ${order.user}</h3>
             <p><strong>Produkt:</strong> ${order.produkt}</p>
@@ -129,6 +176,11 @@
             <p><strong>Status:</strong> ${order.status || "offen"}</p>
           `);
         });
+
+        // Button-Events
+        div.querySelector(".btn-bearbeitung").addEventListener("click", () => updateStatus(orderId, "in bearbeitung"));
+        div.querySelector(".btn-abgeschlossen").addEventListener("click", () => updateStatus(orderId, "abgeschlossen"));
+        div.querySelector(".btn-delete").addEventListener("click", () => deleteOrder(orderId));
 
         ordersContainer.appendChild(div);
       });
