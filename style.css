@@ -18,7 +18,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   padding: 1rem;
   max-width: 1200px; /* optional für Layout-Zentrierung */
   margin: 0 auto; /* optional */
