@@ -142,14 +142,12 @@ async function buildNav() {
   console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
 }
 
-    }
-
   } else {
     navButtons.innerHTML = `
-  <a href="index.html">Startseite</a>
-  <a href="login.html">Anmelden</a>
-  <a href="register.html">Registrieren</a>
-`;
+      <a href="index.html">Startseite</a>
+      <a href="login.html">Anmelden</a>
+      <a href="register.html">Registrieren</a>
+    `;
   }
 }
 
