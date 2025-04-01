@@ -43,7 +43,6 @@ async function buildNav() {
     }
 
     navButtons.innerHTML = `
-      <a href="index.html">Startseite</a>
       <a href="meine-bestellungen.html">Meine Bestellungen</a>
       ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
       <span style="color: white;">Angemeldet als <strong>${username}</strong></span>
