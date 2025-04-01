@@ -30,18 +30,22 @@ header {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
-  min-width: 250px; /* ← verhindert Umbruch */
+  min-width: 250px;
 }
 
+/* NUR diese Zeile ist verantwortlich für Button-Reihen-Anordnung */
 .nav-buttons-row {
   display: flex;
-  gap: 1rem;
+  flex-direction: row;  /* ← wichtig! */
+  gap: 0.5rem;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .user-info {
   font-size: 0.9rem;
   color: white;
+  text-align: right;
 }
 
 .nav-buttons a {
