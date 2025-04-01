@@ -14,14 +14,10 @@ if (headerContainer) {
     .then(res => res.text())
     .then(html => {
       headerContainer.innerHTML = html;
-      buildNav(); // Nur HIER aufrufen – wenn Header im DOM ist
-      
-      const username = localStorage.getItem("user");
-  console.log("Gefundener Benutzer:", username);
-  console.log("usernameDisplay:", document.getElementById("usernameDisplay"));
+      buildNav();
     });
 } else {
-  buildNav(); // falls kein container
+  buildNav(); // Falls kein Header vorhanden
 }
 
 async function buildNav() {
@@ -58,13 +54,13 @@ async function buildNav() {
       </div>
     `;
 
-    // Jetzt erst username eintragen
+    // Benutzername nachträglich einsetzen
     const usernameDisplay = document.getElementById("usernameDisplay");
-    if (usernameDisplay && username) {
+    if (usernameDisplay) {
       usernameDisplay.textContent = username;
     }
 
-    // Benutzer Popup-Logik
+    // Popup-Logik
     const userBtn = document.getElementById("userBtn");
     const popup = document.getElementById("profilePopup");
     const popupUser = document.getElementById("popupUser");
@@ -84,7 +80,7 @@ async function buildNav() {
     });
 
     const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", () => {
+    logoutBtn?.addEventListener("click", () => {
       localStorage.removeItem("user");
       localStorage.removeItem("isAdmin");
       window.location.href = "index.html";
@@ -99,6 +95,5 @@ async function buildNav() {
   }
 }
 
-// Optional: Firestore-Test
+// Debug-Ausgabe
 console.log("Firestore verbunden:", db);
-
