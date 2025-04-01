@@ -63,5 +63,30 @@ async function buildNav() {
   }
 }
 
+const userBtn = document.getElementById("userBtn");
+const popup = document.getElementById("profilePopup");
+const popupUser = document.getElementById("popupUser");
+const popupRole = document.getElementById("popupRole");
+
+userBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const username = localStorage.getItem("user") || "Unbekannt";
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+  popupUser.textContent = username;
+  popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
+  popup.style.display = popup.style.display === "none" ? "block" : "none";
+});
+
+// Optional: Klick außerhalb → schließt Popup
+document.addEventListener("click", (e) => {
+  if (!popup.contains(e.target) && e.target.id !== "userBtn") {
+    popup.style.display = "none";
+  }
+});
+
+
 // Optional: Firestore-Test
 console.log("Firestore verbunden:", db);
+
