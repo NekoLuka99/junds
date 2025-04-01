@@ -14,13 +14,6 @@ header {
   margin-bottom: 1rem;
 }
 
-.top-bar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.5rem 1rem;
-  background-color: #0070dd;
-}
-
 .header-content {
   display: flex;
   justify-content: space-between;
@@ -37,14 +30,9 @@ header {
 
 .banner img {
   max-height: 60px;
-  height: auto;
-}
-
-.banner img {
   max-width: 320px;
   height: auto;
 }
-
 
 header h1 {
   margin: 0;
