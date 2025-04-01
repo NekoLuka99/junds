@@ -49,11 +49,16 @@ async function buildNav() {
     ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
   </div>
   <div class="nav-buttons-row">
-    <a href="#" id="userBtn">👤 ${username}</a>
+    <a href="#" id="userBtn">👤 <span id="usernameDisplay">Benutzer</span></a>
     <a href="#" id="logoutBtn">Logout</a>
   </div>
 `;
+    const usernameDisplay = document.getElementById("usernameDisplay");
+if (usernameDisplay) {
+  usernameDisplay.textContent = username;
+}
 
+    buildNav()
 
     // Benutzer Popup-Logik
     const userBtn = document.getElementById("userBtn");
