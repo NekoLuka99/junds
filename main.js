@@ -24,7 +24,7 @@ if (headerContainer) {
 
 async function buildNav() {
   const username = localStorage.getItem("user")?.toLowerCase();
-  const navButtons = document.querySelector(".nav-buttons") || document.querySelector(".nav-wrapper");
+  const navButtons = document.querySelector(".nav-buttons");
 
   if (!navButtons) return;
 
@@ -51,7 +51,7 @@ async function buildNav() {
         ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
       </div>
       <div class="nav-buttons-row">
-        <a href="#" id="userBtn">👤 <span id="usernameDisplay">${username}</span></a>
+        <a href="#" id="userBtn">👤 ${username}</a>
         <a href="#" id="logoutBtn">Logout</a>
       </div>
     `;
@@ -63,34 +63,32 @@ async function buildNav() {
       window.location.href = "index.html";
     });
 
-    // Popup-Logik
+    // ➕ Jetzt kommt die Popup-Logik
     const userBtn = document.getElementById("userBtn");
-const popup = document.getElementById("profilePopup");
-const popupUser = document.getElementById("popupUser");
-const popupRole = document.getElementById("popupRole");
+    const popup = document.getElementById("profilePopup");
+    const popupUser = document.getElementById("popupUser");
+    const popupRole = document.getElementById("popupRole");
 
-if (userBtn && popup && popupUser && popupRole) {
-  userBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    popupUser.textContent = username;
-    popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
-    popup.style.display = popup.style.display === "block" ? "none" : "block";
-  });
+    if (userBtn && popup && popupUser && popupRole) {
+      userBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        popupUser.textContent = username;
+        popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
+        popup.style.display = popup.style.display === "block" ? "none" : "block";
+      });
 
-  document.addEventListener("click", (e) => {
-    // nur schließen, wenn außerhalb geklickt wird
-    if (
-      popup.style.display === "block" &&
-      !popup.contains(e.target) &&
-      e.target.id !== "userBtn"
-    ) {
-      popup.style.display = "none";
+      document.addEventListener("click", (e) => {
+        if (
+          popup.style.display === "block" &&
+          !popup.contains(e.target) &&
+          e.target.id !== "userBtn"
+        ) {
+          popup.style.display = "none";
+        }
+      });
+    } else {
+      console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
     }
-  });
-} else {
-  console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
-}
-
 
   } else {
     navButtons.innerHTML = `
