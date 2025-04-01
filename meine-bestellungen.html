@@ -54,13 +54,23 @@
     } else {
       ordersContainer.innerHTML = "";
       orderSnap.forEach(doc => {
-        const order = doc.data();
-        const div = document.createElement("div");
-        div.innerHTML = `
-          <strong>${order.produkt}</strong> – ${order.menge} Stück – von <em>${order.user}</em>
-        `;
-        ordersContainer.appendChild(div);
-      });
+  const order = doc.data();
+  const div = document.createElement("div");
+
+  const itemList = order.items?.map(item =>
+    `<div><strong>${item.product}</strong> – ${item.menge} Stück – ${item.price.toFixed(2)} €</div>`
+  ).join("") || "<div>Keine Artikel</div>";
+
+  div.innerHTML = `
+    <div style="margin-bottom: 1rem;">
+      ${itemList}
+      <em>von ${order.user}</em>
+    </div>
+  `;
+
+  ordersContainer.appendChild(div);
+});
+
     }
   }
 
