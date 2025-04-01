@@ -37,7 +37,8 @@ header {
 }
 
 .user-info {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  white-space: nowrap; /* Verhindert Umbruch */
   color: white;
 }
 
