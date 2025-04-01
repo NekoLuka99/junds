@@ -1,4 +1,4 @@
-/* style.css */
+/* style.css – modernisiert & bereinigt */
 
 body {
   font-family: Arial, sans-serif;
@@ -21,15 +21,16 @@ header {
   flex-wrap: wrap;
 }
 
+/* Navigation Buttons */
 .nav-buttons {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-/* Buttons rechts im header*/
+
 .nav-buttons a {
   display: inline-block;
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1rem;
   background: #444;
   color: white;
   text-decoration: none;
@@ -48,38 +49,16 @@ header {
   margin-left: 0.5rem;
 }
 
-/* banner zu startseite*/
+/* Banner-Bild */
 .banner img {
   max-height: 100px;
-  max-width: 320px;
-  height: auto;
-  transition: all 0.2s ease-in-out;
+  width: auto;
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
 }
 
 .banner img:hover {
   opacity: 0.9;
   transform: scale(1.02);
-  transition: all 0.2s ease-in-out;
-}
-
-
-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-header .nav-buttons a {
-  color: white;
-  text-decoration: none;
-  margin-left: 1rem;
-  padding: 0.5rem 1rem;
-  background: #444;
-  border-radius: 5px;
-  transition: background 0.3s;
-}
-
-header .nav-buttons a:hover {
-  background: #666;
 }
 
 main {
@@ -105,6 +84,7 @@ form button {
   text-decoration: none;
   font-weight: bold;
   border-radius: 6px;
+  transition: background 0.2s ease-in-out;
 }
 
 .btn-store:hover {
