@@ -76,25 +76,72 @@ async function buildNav() {
     const popupRole = document.getElementById("popupRole");
 
     if (userBtn && popup && popupUser && popupRole) {
-      userBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        popupUser.textContent = username;
-        popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
-        popup.style.display = popup.style.display === "block" ? "none" : "block";
-      });
+  // Popup öffnen/schließen
+  userBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    popupUser.textContent = username;
+    popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+  });
 
-      document.addEventListener("click", (e) => {
-        if (
-          popup.style.display === "block" &&
-          !popup.contains(e.target) &&
-          e.target.id !== "userBtn"
-        ) {
-          popup.style.display = "none";
-        }
-      });
-    } else {
-      console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
+  // Bearbeitungsformular einmalig einfügen (wenn nicht vorhanden)
+  if (!document.getElementById("editProfileForm")) {
+    const editHtml = `
+      <div id="editProfileForm" style="display:none; margin-top: 1rem;">
+        <input type="text" id="editName" placeholder="Name" style="display:block; margin-bottom:0.5rem; width:100%;">
+        <input type="text" id="editAddress" placeholder="Adresse" style="display:block; margin-bottom:0.5rem; width:100%;">
+        <input type="text" id="editPhone" placeholder="Telefonnummer" style="display:block; margin-bottom:0.5rem; width:100%;">
+        <button id="saveProfileBtn" style="width:100%;">💾 Speichern</button>
+      </div>
+    `;
+    popup.insertAdjacentHTML("beforeend", editHtml);
+  }
+
+  // Toggle-Funktion für Formular
+  const toggleEditLink = popup.querySelector("a[href='#']");
+  const editForm = document.getElementById("editProfileForm");
+  toggleEditLink?.addEventListener("click", (e) => {
+    e.preventDefault();
+    editForm.style.display = editForm.style.display === "block" ? "none" : "block";
+  });
+
+  // Speichern
+  const saveBtn = document.getElementById("saveProfileBtn");
+  saveBtn?.addEventListener("click", async () => {
+    const name = document.getElementById("editName").value.trim();
+    const address = document.getElementById("editAddress").value.trim();
+    const phone = document.getElementById("editPhone").value.trim();
+
+    try {
+      const userQuery = query(collection(db, "users"), where("username", "==", username));
+      const userSnap = await getDocs(userQuery);
+      if (!userSnap.empty) {
+        const userRef = doc(db, "users", userSnap.docs[0].id);
+        await updateDoc(userRef, { name, address, phone });
+        alert("✅ Profil aktualisiert!");
+        editForm.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Fehler beim Aktualisieren:", err);
+      alert("❌ Fehler beim Speichern.");
     }
+  });
+
+  // Klick außerhalb → Popup schließen
+  document.addEventListener("click", (e) => {
+    if (
+      popup.style.display === "block" &&
+      !popup.contains(e.target) &&
+      e.target.id !== "userBtn"
+    ) {
+      popup.style.display = "none";
+    }
+  });
+
+} else {
+  console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
+}
+
 
   } else {
     navButtons.innerHTML = `
