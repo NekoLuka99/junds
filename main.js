@@ -46,15 +46,21 @@ async function buildNav() {
     }
 
     navButtons.innerHTML = `
-      <div class="nav-buttons-row">
-        <a href="meine-bestellungen.html">Meine Bestellungen</a>
-        ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
-      </div>
-      <div class="nav-buttons-row">
-        <a href="#" id="userBtn">👤 ${username}</a>
-        <a href="#" id="logoutBtn">Logout</a>
-      </div>
-    `;
+  <div class="nav-buttons-row">
+    <a href="meine-bestellungen.html">Meine Bestellungen</a>
+    ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
+  </div>
+  <div class="nav-buttons-row">
+    <a href="#" id="userBtn">👤 ${username}</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </div>
+  <div id="profilePopup" class="profile-popup" style="display:none;">
+    <p><strong>Benutzer:</strong> <span id="popupUser">–</span></p>
+    <p><strong>Rolle:</strong> <span id="popupRole">–</span></p>
+    <a href="#">🔧 Profil bearbeiten</a>
+  </div>
+`;
+;
 
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn?.addEventListener("click", () => {
