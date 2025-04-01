@@ -24,14 +24,12 @@ if (headerContainer) {
 
 async function buildNav() {
   const username = localStorage.getItem("user")?.toLowerCase();
-  const navButtons = document.querySelector(".nav-buttons");
+  const navButtons = document.querySelector(".nav-buttons") || document.querySelector(".nav-wrapper");
 
   if (!navButtons) return;
 
   if (username) {
     let isAdmin = false;
-    let userId = null;
-    let userData = {};
 
     try {
       const usersRef = collection(db, "users");
@@ -39,9 +37,7 @@ async function buildNav() {
       const userSnap = await getDocs(userQuery);
 
       if (!userSnap.empty) {
-        const docSnap = userSnap.docs[0];
-        userData = docSnap.data();
-        userId = docSnap.id;
+        const userData = userSnap.docs[0].data();
         isAdmin = userData.isAdmin === true;
         localStorage.setItem("isAdmin", isAdmin);
       }
@@ -60,53 +56,34 @@ async function buildNav() {
       </div>
     `;
 
-    // Popup-Logik
-    const userBtn = document.getElementById("userBtn");
-    const popup = document.getElementById("profilePopup");
-    const popupUser = document.getElementById("popupUser");
-    const popupRole = document.getElementById("popupRole");
-    const popupTel = document.getElementById("popupTel");
-    const popupAdr = document.getElementById("popupAdr");
-    const popupSave = document.getElementById("popupSave");
-
-    userBtn?.addEventListener("click", (e) => {
-      e.preventDefault();
-      popupUser.textContent = username;
-      popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
-      popupTel.value = userData.telefon || "";
-      popupAdr.value = userData.adresse || "";
-      popup.style.display = popup.style.display === "none" ? "block" : "none";
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!popup.contains(e.target) && e.target.id !== "userBtn") {
-        popup.style.display = "none";
-      }
-    });
-
-    popupSave?.addEventListener("click", async () => {
-      const neueTel = popupTel.value.trim();
-      const neueAdr = popupAdr.value.trim();
-      try {
-        const ref = doc(db, "users", userId);
-        await updateDoc(ref, {
-          telefon: neueTel,
-          adresse: neueAdr
-        });
-        popup.style.display = "none";
-        alert("✅ Profil gespeichert!");
-      } catch (err) {
-        console.error("Fehler beim Speichern des Profils:", err);
-        alert("❌ Fehler beim Speichern");
-      }
-    });
-
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn?.addEventListener("click", () => {
       localStorage.removeItem("user");
       localStorage.removeItem("isAdmin");
       window.location.href = "index.html";
     });
+
+    // Popup-Logik
+    const userBtn = document.getElementById("userBtn");
+    const popup = document.getElementById("profilePopup");
+    const popupUser = document.getElementById("popupUser");
+    const popupRole = document.getElementById("popupRole");
+
+    if (userBtn && popup && popupUser && popupRole) {
+      userBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        popupUser.textContent = username;
+        popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
+        popup.style.display = popup.style.display === "none" ? "block" : "none";
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!popup.contains(e.target) && e.target.id !== "userBtn") {
+          popup.style.display = "none";
+        }
+      });
+    }
+
   } else {
     navButtons.innerHTML = `
       <a href="index.html">Startseite</a>
@@ -116,5 +93,4 @@ async function buildNav() {
   }
 }
 
-// Debug-Ausgabe
 console.log("Firestore verbunden:", db);
