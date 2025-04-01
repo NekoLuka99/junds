@@ -33,9 +33,11 @@ header {
 .nav-buttons-row {
   display: flex;
   gap: 0.75rem;
+  margin-bottom: 0.5rem;  /* <-- Abstand zur nächsten Button-Zeile */
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+
 
 
 .user-info {
