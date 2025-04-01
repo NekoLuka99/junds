@@ -134,3 +134,32 @@ form button {
     text-align: center;
   }
 }
+
+
+.profile-popup {
+  position: absolute;
+  top: 100px;
+  right: 1rem;
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  z-index: 999;
+  width: 220px;
+}
+
+.profile-popup p {
+  margin: 0.5rem 0;
+}
+
+.profile-popup a {
+  display: block;
+  margin-top: 1rem;
+  text-decoration: none;
+  font-weight: bold;
+  color: #0088ff;
+}
+.profile-popup a:hover {
+  text-decoration: underline;
+}
