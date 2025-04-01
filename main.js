@@ -45,7 +45,7 @@ async function buildNav() {
       console.error("Fehler beim Admin-Check:", err);
     }
 
-    navButtons.innerHTML = `
+    navButtons.innerHTML = 
   <div class="nav-buttons-row">
     <a href="meine-bestellungen.html">Meine Bestellungen</a>
     ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
@@ -59,7 +59,7 @@ async function buildNav() {
     <p><strong>Rolle:</strong> <span id="popupRole">–</span></p>
     <a href="#">🔧 Profil bearbeiten</a>
   </div>
-`;
+;
 ;
 
     const logoutBtn = document.getElementById("logoutBtn");
@@ -142,13 +142,14 @@ async function buildNav() {
   console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
 }
 
+    }
 
   } else {
-    navButtons.innerHTML = `
+    navButtons.innerHTML = 
       <a href="index.html">Startseite</a>
       <a href="login.html">Anmelden</a>
       <a href="register.html">Registrieren</a>
-    `;
+    ;
   }
 }
 
