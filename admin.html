@@ -167,15 +167,20 @@
 
         // Klick auf Kasten zeigt Popup mit Details
         div.addEventListener("click", (e) => {
-          // Klick auf Button → Popup unterdrücken
-          if (e.target.tagName === "BUTTON") return;
-          openPopup(`
-            <h3>Bestellung von ${order.user}</h3>
-            <p><strong>Produkt:</strong> ${order.produkt}</p>
-            <p><strong>Menge:</strong> ${order.menge}</p>
-            <p><strong>Status:</strong> ${order.status || "offen"}</p>
-          `);
-        });
+  if (e.target.tagName === "BUTTON") return;
+
+  const itemList = order.items?.map(item =>
+    `<li>${item.menge}x ${item.product} – ${item.price.toFixed(2)} €</li>`
+  ).join("") || "<li>-</li>";
+
+  openPopup(`
+    <h3>Bestellung von ${order.user}</h3>
+    <p><strong>Artikel:</strong></p>
+    <ul>${itemList}</ul>
+    <p><strong>Status:</strong> ${order.status || "offen"}</p>
+  `);
+});
+
 
         // Button-Events
         div.querySelector(".btn-bearbeitung").addEventListener("click", () => updateStatus(orderId, "in bearbeitung"));
