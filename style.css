@@ -63,6 +63,7 @@ header {
   max-height: 100px;
   width: auto;
   transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  margin-right: 1rem; /* optional für Abstand */
 }
 .banner img:hover {
   opacity: 0.9;
@@ -97,4 +98,28 @@ form button {
 
 .btn-store:hover {
   background-color: #4cae4c;
+}
+
+/* Responsive Anpassungen für kleine Bildschirme */
+@media (max-width: 600px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-wrapper {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .nav-buttons-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-buttons-row a,
+  .user-info a {
+    width: 100%;
+    text-align: center;
+  }
 }
