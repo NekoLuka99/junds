@@ -15,6 +15,10 @@ if (headerContainer) {
     .then(html => {
       headerContainer.innerHTML = html;
       buildNav(); // Nur HIER aufrufen – wenn Header im DOM ist
+      
+      const username = localStorage.getItem("user");
+  console.log("Gefundener Benutzer:", username);
+  console.log("usernameDisplay:", document.getElementById("usernameDisplay"));
     });
 } else {
   buildNav(); // falls kein container
@@ -97,6 +101,4 @@ async function buildNav() {
 
 // Optional: Firestore-Test
 console.log("Firestore verbunden:", db);
-console.log("Gefundener Benutzer:", username); 
-console.log("usernameDisplay:", document.getElementById("usernameDisplay")); 
 
