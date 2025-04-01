@@ -54,12 +54,6 @@ async function buildNav() {
       </div>
     `;
 
-    // Benutzername nachträglich einsetzen
-    const usernameDisplay = document.getElementById("usernameDisplay");
-    if (usernameDisplay) {
-      usernameDisplay.textContent = username;
-    }
-
     // Popup-Logik
     const userBtn = document.getElementById("userBtn");
     const popup = document.getElementById("profilePopup");
