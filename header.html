@@ -7,43 +7,41 @@
 </head>
 <body>
   <header>
-    <div class="header-content">
-      <div class="banner">
-        <a href="index.html">
-          <img src="img/js_trans.png" alt="J&S Transporte Logo">
-        </a>
+  <div class="header-content">
+    <div class="banner">
+      <a href="index.html">
+        <img src="img/js_trans.png" alt="J&S Transporte Logo">
+      </a>
+    </div>
+
+    <div class="nav-wrapper nav-buttons">
+      <!-- Zeile 1 -->
+      <div class="nav-buttons-row">
+        <a href="meine-bestellungen.html">Meine Bestellungen</a>
+        <a href="admin.html">Bestellungen</a>
       </div>
 
-      <div class="nav-wrapper nav-buttons">
-        <!-- Zeile 1 -->
-        <div class="nav-buttons-row">
-          <a href="meine-bestellungen.html">Meine Bestellungen</a>
-          <a href="admin.html">Bestellungen</a>
-        </div>
+      <!-- Zeile 2 -->
+      <div class="nav-buttons-row">
+        <a href="#" id="userBtn">👤 <span id="usernameDisplay">Benutzer</span></a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
 
-        <!-- Zeile 2 -->
-        <div class="nav-buttons-row">
-          <a href="#" id="userBtn">👤 <span id="usernameDisplay">Benutzer</span></a>
-          <a href="#" id="logoutBtn">Logout</a>
-        </div>
-
-        <!-- Profil Popup -->
-        <div id="profilePopup" class="profile-popup" style="display:none;">
-          <p><strong>Benutzer:</strong> <span id="popupUser">–</span></p>
-          <p><strong>Rolle:</strong> <span id="popupRole">–</span></p>
-          <form id="profileForm">
-            <label for="phone">📞 Telefonnummer:</label>
-            <input type="text" id="phone" placeholder="Telefonnummer">
-
-            <label for="address">🏠 Adresse:</label>
-            <input type="text" id="address" placeholder="Adresse">
-
-            <button type="submit">💾 Speichern</button>
-          </form>
-        </div>
+      <!-- Popup -->
+      <div id="profilePopup" class="profile-popup" style="display:none; background: white; color: black; border: 1px solid #ccc; padding: 1rem; border-radius: 8px; position: absolute; right: 1rem; top: 120px; z-index: 1000; min-width: 250px;">
+        <p><strong>Benutzer:</strong> <span id="popupUser">–</span></p>
+        <p><strong>Rolle:</strong> <span id="popupRole">–</span></p>
+        <hr>
+        <label for="phone">📞 Telefonnummer</label>
+        <input type="text" id="phone" placeholder="z. B. +49 123 456789">
+        <label for="address">🏠 Adresse</label>
+        <input type="text" id="address" placeholder="z. B. Musterstraße 1, 12345 Berlin">
+        <button id="saveProfileBtn" style="margin-top: 0.5rem; background: #0088ff; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px;">💾 Speichern</button>
       </div>
     </div>
-  </header>
+  </div>
+</header>
+
 
   <div id="header-container"></div>
 </body>
