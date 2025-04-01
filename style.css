@@ -20,8 +20,8 @@ header {
   align-items: flex-start;
   flex-wrap: nowrap;
   padding: 1rem;
-  max-width: 1200px; /* optional für Layout-Zentrierung */
-  margin: 0 auto; /* optional */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Navigation Buttons */
@@ -33,10 +33,9 @@ header {
   min-width: 250px;
 }
 
-/* NUR diese Zeile ist verantwortlich für Button-Reihen-Anordnung */
 .nav-buttons-row {
   display: flex;
-  flex-direction: row;  /* ← wichtig! */
+  flex-direction: row;
   gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -62,14 +61,6 @@ header {
 .nav-buttons a:hover {
   background: #666;
 }
-
-.nav-buttons .user-info {
-  color: white;
-  font-weight: normal;
-  font-size: 0.9rem;
-  margin-right: 1rem;
-}
-
 
 /* Banner-Bild */
 .banner img {
