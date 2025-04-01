@@ -44,11 +44,16 @@ async function buildNav() {
     }
 
     navButtons.innerHTML = `
-      <a href="meine-bestellungen.html">Meine Bestellungen</a>
-      ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
-      <a href="#" id="userBtn">👤 ${username}</a>
-      <a href="#" id="logoutBtn">Logout</a>
-    `;
+  <div class="nav-buttons-row">
+    <a href="meine-bestellungen.html">Meine Bestellungen</a>
+    ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
+  </div>
+  <div class="nav-buttons-row">
+    <a href="#" id="userBtn">👤 ${username}</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </div>
+`;
+
 
     // Benutzer Popup-Logik
     const userBtn = document.getElementById("userBtn");
