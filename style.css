@@ -40,6 +40,7 @@ header {
   font-size: 1.1rem;
   color: white;
   white-space: nowrap;
+}
 
 .nav-buttons-row a,
 .user-info a {
