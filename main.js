@@ -14,10 +14,10 @@ if (headerContainer) {
     .then(res => res.text())
     .then(html => {
       headerContainer.innerHTML = html;
-      buildNav();
+      buildNav(); // Nur HIER aufrufen – wenn Header im DOM ist
     });
 } else {
-  buildNav(); // Falls kein Header vorhanden, trotzdem Navigation erzeugen
+  buildNav(); // falls kein container
 }
 
 async function buildNav() {
@@ -44,21 +44,21 @@ async function buildNav() {
     }
 
     navButtons.innerHTML = `
-  <div class="nav-buttons-row">
-    <a href="meine-bestellungen.html">Meine Bestellungen</a>
-    ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
-  </div>
-  <div class="nav-buttons-row">
-    <a href="#" id="userBtn">👤 <span id="usernameDisplay">Benutzer</span></a>
-    <a href="#" id="logoutBtn">Logout</a>
-  </div>
-`;
-    const usernameDisplay = document.getElementById("usernameDisplay");
-if (usernameDisplay) {
-  usernameDisplay.textContent = username;
-}
+      <div class="nav-buttons-row">
+        <a href="meine-bestellungen.html">Meine Bestellungen</a>
+        ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
+      </div>
+      <div class="nav-buttons-row">
+        <a href="#" id="userBtn">👤 <span id="usernameDisplay">Benutzer</span></a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
+    `;
 
-    buildNav()
+    // Jetzt erst username eintragen
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    if (usernameDisplay && username) {
+      usernameDisplay.textContent = username;
+    }
 
     // Benutzer Popup-Logik
     const userBtn = document.getElementById("userBtn");
@@ -97,3 +97,6 @@ if (usernameDisplay) {
 
 // Optional: Firestore-Test
 console.log("Firestore verbunden:", db);
+console.log("Gefundener Benutzer:", username); 
+console.log("usernameDisplay:", document.getElementById("usernameDisplay")); 
+
