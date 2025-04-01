@@ -27,62 +27,55 @@ async function buildNav() {
   if (!navButtons) return;
 
   if (username) {
-  let isAdmin = false;
+    let isAdmin = false;
 
-  try {
-    const usersRef = collection(db, "users");
-    const userQuery = query(usersRef, where("username", "==", username));
-    const userSnap = await getDocs(userQuery);
+    try {
+      const usersRef = collection(db, "users");
+      const userQuery = query(usersRef, where("username", "==", username));
+      const userSnap = await getDocs(userQuery);
 
-    if (!userSnap.empty) {
-      const userData = userSnap.docs[0].data();
-      isAdmin = userData.isAdmin === true;
-      localStorage.setItem("isAdmin", isAdmin); // speichern
+      if (!userSnap.empty) {
+        const userData = userSnap.docs[0].data();
+        isAdmin = userData.isAdmin === true;
+        localStorage.setItem("isAdmin", isAdmin);
+      }
+    } catch (err) {
+      console.error("Fehler beim Admin-Check:", err);
     }
-  } catch (err) {
-    console.error("Fehler beim Admin-Check:", err);
-  }
 
-  navButtons.innerHTML = `
-    <a href="meine-bestellungen.html">Meine Bestellungen</a>
-    ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
-    <a href="#" id="userBtn">👤 ${username}</a>
-    <a href="#" id="logoutBtn">Logout</a>
-  `;
+    navButtons.innerHTML = `
+      <a href="meine-bestellungen.html">Meine Bestellungen</a>
+      ${isAdmin ? '<a href="admin.html">Bestellungen</a>' : ''}
+      <a href="#" id="userBtn">👤 ${username}</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    `;
 
-  // Benutzer Popup-Logik
-  const userBtn = document.getElementById("userBtn");
-  const popup = document.getElementById("profilePopup");
-  const popupUser = document.getElementById("popupUser");
-  const popupRole = document.getElementById("popupRole");
+    // Benutzer Popup-Logik
+    const userBtn = document.getElementById("userBtn");
+    const popup = document.getElementById("profilePopup");
+    const popupUser = document.getElementById("popupUser");
+    const popupRole = document.getElementById("popupRole");
 
-  userBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    popupUser.textContent = username;
-    popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
-    popup.style.display = popup.style.display === "none" ? "block" : "none";
-  });
+    userBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      popupUser.textContent = username;
+      popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
+      popup.style.display = popup.style.display === "none" ? "block" : "none";
+    });
 
-  document.addEventListener("click", (e) => {
-    if (!popup.contains(e.target) && e.target.id !== "userBtn") {
-      popup.style.display = "none";
-    }
-  });
-
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("isAdmin");
-    window.location.href = "index.html";
-  });
-}
-
+    document.addEventListener("click", (e) => {
+      if (!popup.contains(e.target) && e.target.id !== "userBtn") {
+        popup.style.display = "none";
+      }
+    });
 
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("user");
+      localStorage.removeItem("isAdmin");
       window.location.href = "index.html";
     });
+
   } else {
     navButtons.innerHTML = `
       <a href="index.html">Startseite</a>
@@ -92,7 +85,5 @@ async function buildNav() {
   }
 }
 
-
 // Optional: Firestore-Test
 console.log("Firestore verbunden:", db);
-
