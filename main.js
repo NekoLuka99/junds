@@ -65,24 +65,32 @@ async function buildNav() {
 
     // Popup-Logik
     const userBtn = document.getElementById("userBtn");
-    const popup = document.getElementById("profilePopup");
-    const popupUser = document.getElementById("popupUser");
-    const popupRole = document.getElementById("popupRole");
+const popup = document.getElementById("profilePopup");
+const popupUser = document.getElementById("popupUser");
+const popupRole = document.getElementById("popupRole");
 
-    if (userBtn && popup && popupUser && popupRole) {
-      userBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        popupUser.textContent = username;
-        popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
-        popup.style.display = popup.style.display === "none" ? "block" : "none";
-      });
+if (userBtn && popup && popupUser && popupRole) {
+  userBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    popupUser.textContent = username;
+    popupRole.textContent = isAdmin ? "Admin" : "Benutzer";
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+  });
 
-      document.addEventListener("click", (e) => {
-        if (!popup.contains(e.target) && e.target.id !== "userBtn") {
-          popup.style.display = "none";
-        }
-      });
+  document.addEventListener("click", (e) => {
+    // nur schließen, wenn außerhalb geklickt wird
+    if (
+      popup.style.display === "block" &&
+      !popup.contains(e.target) &&
+      e.target.id !== "userBtn"
+    ) {
+      popup.style.display = "none";
     }
+  });
+} else {
+  console.warn("❗ Benutzer-Popup oder -Elemente nicht gefunden");
+}
+
 
   } else {
     navButtons.innerHTML = `
