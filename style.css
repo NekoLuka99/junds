@@ -28,7 +28,10 @@ header {
   font-weight: bold;
 }
 
-.banner img {
+.banner img:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  transition: all 0.2s ease-in-out;
   max-height: 100px;
   max-width: 320px;
   height: auto;
