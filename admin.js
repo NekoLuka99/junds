@@ -69,13 +69,25 @@ async function loadOrders() {
   }
 
   ordersContainer.innerHTML = "";
-  orderSnap.forEach(docItem => {
+
+  for (const docItem of orderSnap.docs) {
     const order = docItem.data();
     const orderId = docItem.id;
     const status = (order.status || "offen").toLowerCase();
     const cssClass = status === "abgeschlossen" ? "status-abgeschlossen"
                     : status === "in bearbeitung" ? "status-bearbeitung"
                     : "status-offen";
+
+    // Adresse des Bestellers auslesen
+    let addressHtml = "";
+    const userQuery = query(collection(db, "users"), where("username", "==", order.user));
+    const userSnap = await getDocs(userQuery);
+    if (!userSnap.empty) {
+      const userData = userSnap.docs[0].data();
+      if (userData.address) {
+        addressHtml = `<p><strong>Adresse:</strong> ${userData.address}</p>`;
+      }
+    }
 
     const div = document.createElement("div");
     div.className = `order-card ${cssClass}`;
@@ -99,6 +111,7 @@ async function loadOrders() {
         <h3>Bestellung von ${order.user}</h3>
         <p><strong>Artikel:</strong></p>
         <ul>${itemList}</ul>
+        ${addressHtml}
         <p><strong>Status:</strong> ${order.status || "offen"}</p>
       `);
     });
@@ -108,7 +121,7 @@ async function loadOrders() {
     div.querySelector(".btn-delete").addEventListener("click", () => deleteOrder(orderId));
 
     ordersContainer.appendChild(div);
-  });
+  }
 }
 
 loadOrders();
