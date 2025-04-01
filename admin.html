@@ -11,7 +11,7 @@
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1rem;
-      color: white;
+      color: black;
       cursor: pointer;
     }
     .status-offen { background-color: #f0ad4e; }
@@ -33,24 +33,40 @@
     .btn-delete { background-color: #d9534f; color: white; }
 
     #popup {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border: 2px solid #ccc;
-      padding: 1rem;
-      z-index: 1000;
-      max-width: 400px;
-      display: none;
-    }
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95); /* hell & leicht transparent */
+  backdrop-filter: blur(8px); /* Weicher Hintergrund */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  max-width: 450px;
+  width: 90%;
+  z-index: 1000;
+  display: none;
+  color: #111; /* dunkle Schrift */
+  font-family: Arial, sans-serif;
+}
+
     #popup h3 {
       margin-top: 0;
     }
     #popup-close {
-      float: right;
-      cursor: pointer;
-      color: red;
-    }
+  float: right;
+  cursor: pointer;
+  color: #c00;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+#popup-close:hover {
+  color: #900;
+}
+
     #popup-overlay {
       position: fixed;
       top: 0; left: 0;
