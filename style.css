@@ -96,6 +96,17 @@ main {
   padding: 2rem;
 }
 
+.hero-box {
+  max-width: 800px;
+  margin: 5rem auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.85); /* Weiß mit Transparenz */
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+
 form input,
 form button {
   display: block;
