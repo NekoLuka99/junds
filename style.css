@@ -17,17 +17,20 @@ header {
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* neu */
-  gap: 1rem; /* falls gewünscht */
+  align-items: flex-start;
   flex-wrap: wrap;
+  padding: 1rem;
+  max-width: 1200px; /* optional für Layout-Zentrierung */
+  margin: 0 auto; /* optional */
 }
 
 /* Navigation Buttons */
 .nav-buttons {
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* bleibt */
-  gap: 1rem;
+  align-items: flex-end;
+  gap: 0.5rem;
+  min-width: 250px; /* ← verhindert Umbruch */
 }
 
 .nav-buttons-row {
