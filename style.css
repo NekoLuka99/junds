@@ -21,12 +21,33 @@ header {
   flex-wrap: wrap;
 }
 
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .nav-buttons a {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  background: #444;
   color: white;
   text-decoration: none;
-  margin-left: 1rem;
   font-weight: bold;
+  border-radius: 6px;
+  transition: background 0.2s ease-in-out;
 }
+
+.nav-buttons a:hover {
+  background: #666;
+}
+
+.nav-buttons .user-info {
+  color: white;
+  font-weight: normal;
+  margin-left: 0.5rem;
+}
+
 
 .banner img {
   max-height: 100px;
