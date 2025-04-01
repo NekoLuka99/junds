@@ -59,6 +59,16 @@ header {
   background: #666;
 }
 
+#userBtn {
+  background: #555;
+  cursor: pointer;
+}
+
+#userBtn:hover {
+  background: #777;
+}
+
+
 /* Banner-Bild */
 .banner img {
   max-height: 100px;
